@@ -1,0 +1,268 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Oiva API
+  description: "<p>Oiva on elintarvikevalvonnan tarkastustietojen julkistamisjärjestelmä, jota koordinoi Elintarviketurvallisuusvirasto Evira. Oivan mukaisia tarkastuksia tekevät kuntien elintarvikevalvojat valvontasuunnitelman mukaisesti.</p><p>Valvontatulokset julkistetaan sitä mukaa, kun kuntien elintarvikevalvojat tekevät tarkastuksia. Oivassa arvioidaan hymynaamoin yrityksen elintarviketurvallisuutta, kuten elintarvikehygieniaa ja tuoteturvallisuutta. Parhaimman hymyn saamiseen edellytetään lain noudattamista. Aina, kun Oiva hymyilee, elintarviketurvallisuus on kuluttajan kannalta yrityksessä hyvää.</p><p>Oiva yhtenäistää tarkastuskäytäntöjä, koska elintarvikevalvojat ympäri Suomen tekevät tarkastuksia samojen Oiva-arviointiohjeiden perusteella. Tarkastuksista tulee kohdennetumpia sekä nopeampia ja riskiperusteinen tarkastaminen korostuu. Tarkastukset tehdään myös pääsääntöisesti ennalta ilmoittamatta. Yrityksissä tarkastettavat asiat eivät Oivan mukaisten tarkastusten myötä muutu.</p><p>Valvontatietojen julkaisemisella pyritään lisäämään valvonnan läpinäkyvyyttä sekä tuomaan elintarvikevalvonnan tarkastustulokset kuluttajan käyttöön. Tavoitteena on myös lisätä elintarvikevalvonnan tunnettavuutta ja vaikuttavuutta. Oiva kannustaa yrityksiä pitämään huolta elintarvikehygieniasta ja tuotteiden turvallisuudesta. Yrityksille avautuu myös mahdollisuus kertoa kuluttajalle omasta toiminnastaan.</p><p>Lähde: https://www.oivahymy.fi/</p>"
+# during dev, should point to your local machine
+host: localhost
+# basePath prefixes all resource paths
+basePath: /
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+x-a127-config: {}
+x-volos-resources:
+  quota:
+    provider: volos-quota-redis
+    options:
+      timeUnit: minute
+      interval: 1
+      allow: 1000
+  cache:
+    provider: volos-cache-redis
+    options:
+      name: hello-cache
+      ttl: 60000
+paths:
+  /kohdetyypit:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: kohdetyypit
+    x-volos-apply:
+      quota: {}
+      cache: {}
+    get:
+      description: Palauttaa Oiva järjestelmän kohdetyypit kutsujalle
+      # used as the method name of the controller
+      operationId: kohdetyypit
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: Kohdetyypit
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: ErrorResponse
+  /haku:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: haku
+    x-volos-apply:
+      quota: {}
+      cache: {}
+    get:
+      description: Palauttaa hakuparametria vastaavat Oiva kohteet
+      # used as the method name of the controller
+      operationId: haku
+      parameters:
+        - name: hakusana
+          in: query
+          description: Hakusana (postinumero | yritysNimi | markkinointiNimi | katuosoite), jolla haku tehdään.
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: Hakutulokset
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: ErrorResponse
+  /edistynyt_haku:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: edistynyt_haku
+    x-volos-apply:
+      quota: {}
+      #cache: {}
+    get:
+      description: Palauttaa hakuparametreja vastaavat Oiva kohteet
+      # used as the method name of the controller
+      operationId: edistynyt_haku
+      parameters:
+        - name: kohdetyyppi
+          in: query
+          required: false
+          type: "string"
+        - name: nimi
+          in: query
+          required: false
+          type: "string"
+        - name: katu
+          in: query
+          required: false
+          type: "string"
+        - name: postinumero
+          in: query
+          required: false
+          type: "integer"
+        - name: kunta
+          in: query
+          required: false
+          type: "string"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: Hakutulokset
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: ErrorResponse
+  /raportti/pdf:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: raportti_pdf
+    x-volos-apply:
+      quota: {}
+    get:
+      description: P
+      # used as the method name of the controller
+      operationId: raportti_pdf
+      parameters:
+        - name: tunnus
+          in: query
+          required: true
+          type: "string"
+        - name: tarkastustunnus
+          in: query
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: Success
+          #schema:
+            # a pointer to a definition
+            #$ref: Hakutulokset
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: ErrorResponse
+  /raportti/huomiot:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: raportti_huomiot
+    x-volos-apply:
+      quota: {}
+      #cache: {}
+    get:
+      description: Palaalle
+      # used as the method name of the controller
+      operationId: raportti_huomiot
+      parameters:
+        - name: tunnus
+          in: query
+          required: true
+          type: "string"
+        - name: tarkastustunnus
+          in: query
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: Success
+          #schema:
+            # a pointer to a definition
+            #$ref: Kohdetyypit
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: ErrorResponse
+# complex objects have schema definitions
+definitions:
+  Kohdetyypit:
+    type: "array"
+    items:
+      $ref: Kohdetyyppi
+  Hakutulokset:
+    type: "array"
+    items:
+      $ref: Yritys
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: "string"
+  RaporttiListItem:
+    type: "object"
+    required:
+      - tarkastusTunnus
+      - tarkastusPaiva
+      - tarkastusPaivityshetki
+      - arvosana
+    properties:
+      tarkastusTunnus:
+        type: "number"
+      tarkastusPaiva:
+        type: "number"
+      tarkastusPaivityshetki:
+        type: "number"
+      arvosana:
+        type: "number"
+  Yritys:
+    type: "object"
+    required:
+      - raporttiList
+      - markkinointiNimi
+      - tunnus
+      - postinumero
+      - uniqueKey
+      - lisaaHakutuloksia
+      - yritysNimi
+      - kohdetyyppi
+      - katuosoite
+      - postitoimipaikkaFi
+      - postitoimipaikkaSv
+      - kuntaNimiFi
+      - kuntaNimiSv
+      - pohjoisKoordinaatti
+      - itaKoordinaatti
+    properties:
+      raporttiList:
+        type: "array"
+        items:
+          $ref: RaporttiListItem
+      markkinointiNimi:
+        type: "string"
+      tunnus:
+        type: "integer"
+      postinumero:
+        type: "string"
+      uniqueKey:
+        type: "string"
+      lisaaHakutuloksia:
+        type: "boolean"
+      yritysNimi:
+        type: "string"
+      kohdetyyppi:
+        type: "string"
+      katuosoite:
+        type: "string"
+      postitoimipaikkaFi:
+        type: "string"
+      postitoimipaikkaSv:
+        type: "string"
+      kuntaNimiFi:
+        type: "string"
+      kuntaNimiSv:
+        type: "string"
+      pohjoisKoordinaatti:
+        type: "number"
+      itaKoordinaatti:
+        type: "number"
+  Kohdetyyppi:
+    type: "string"
