@@ -1,5 +1,3 @@
-oiva-api
-========
 
 #Miten saan Oiva-API:n koneelleni
 
@@ -12,10 +10,14 @@ oiva-api
 - asenna kehittämistä varten Apigeen julkaisema a127 toolkit (https://github.com/apigee-127/a127-documentation/wiki)
 - npm install -g a127
 
+### Mikä on a127?
+- Build APIs in Node.js and Swagger 2.0 with Apigee-127 https://www.youtube.com/watch?v=Fw43z14Y1Xw
+
 ## Sovelluksen lataus, ajaminen ja muokkaaminen
 - asenna git-versionhallintaohjelma
-- klonaa sovellus koneellesi git clone https://github.com/teemujonkkari/oiva-api.git
-- cd oiva-api
+- kloonaa sovellus koneellesi git clone https://github.com/teemujonkkari/oiva-api.git
+- siirry oiva kansioon cd oiva-api
+- asenna node modulit npm install
 - a127 project start käynnistää palveminen
 - a127 project edit käynnistää rajapinnan määrittelytyökalun
 
