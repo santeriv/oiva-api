@@ -21,3 +21,8 @@
 - a127 project start käynnistää palveminen
 - a127 project edit käynnistää rajapinnan määrittelytyökalun
 
+## TODOs
+- Swagger taitaja
+- Pysyvä koti palvelulle
+- Pdf rippauksen korjaaja
+- Kommentteja ja kehitysehdotuksia
